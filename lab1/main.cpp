@@ -20,7 +20,7 @@ optional<int> ParseThreadCount(int argc, char *argv[], ostream &out) {
 }
 
 void InitDtoObject(PTHREADDTO *pThreadDtoArray, int &i) {
-    auto localIdx = new int(i);
+    auto localIdx = *new int(i);
     pThreadDtoArray[i] = (PTHREADDTO) HeapAlloc(
             GetProcessHeap(),
             HEAP_ZERO_MEMORY,
@@ -32,7 +32,7 @@ void InitDtoObject(PTHREADDTO *pThreadDtoArray, int &i) {
     }
 
     pThreadDtoArray[i]->addressOfIndex = &i;
-    pThreadDtoArray[i]->addressOfLocalIndex = localIdx;
+    pThreadDtoArray[i]->addressOfLocalIndex = &localIdx;
     pThreadDtoArray[i]->indexByValue = i;
 }
 
@@ -52,8 +52,8 @@ DWORD WINAPI ThreadProc(CONST LPVOID lpParam) {
 
     StringCchPrintf(msgBuf, BUF_SIZE,
                     TEXT("addressOfIndex: %d, addressOfLocalIndex: %d, indexByValue: %d\n"),
-                    pThreadDto->addressOfIndex,
-                    pThreadDto->addressOfLocalIndex,
+                    *pThreadDto->addressOfIndex,
+                    *pThreadDto->addressOfLocalIndex,
                     pThreadDto->indexByValue
     );
     StringCchLength(msgBuf, BUF_SIZE, &cchStringSize);
